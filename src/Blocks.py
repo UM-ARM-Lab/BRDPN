@@ -1,4 +1,5 @@
 from tensorflow.keras import regularizers
+import tensorflow as tf
 from tensorflow.keras.layers import Input, Dense, TimeDistributed, LSTM
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
@@ -31,7 +32,7 @@ class RelationalModel(Layer):
 
     def build(self, input_shape):
         self.relnet.build((None, self.n_of_features))  # ,self.input_size
-        self.weights = self.relnet.weights
+        # self.weights = self.relnet.weights
 
     def compute_output_shape(self, input_shape):
         output_size = self.output_size
@@ -39,9 +40,9 @@ class RelationalModel(Layer):
         return (None,) + input_size + (int(output_size),)
 
     def call(self, X):
-        X = K.reshape(X, (-1, self.n_of_features))
+        X = tf.reshape(X, (-1, self.n_of_features))
         output = self.relnet.call(X)
-        output = K.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
+        output = tf.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
         return output
 
     def getRelnet(self):
@@ -74,7 +75,7 @@ class ObjectModel(Layer):
 
     def build(self, input_shape):
         self.objnet.build((None, self.input_size, self.n_of_features))
-        self.weights = self.objnet.weights
+        # self.weights = self.objnet.weights
 
     def compute_output_shape(self, input_shape):
         output_size = self.output_size
@@ -83,9 +84,9 @@ class ObjectModel(Layer):
         return (None,) + input_size + (int(output_size),)
 
     def call(self, X):
-        X = K.reshape(X, (-1, self.n_of_features))
+        X = tf.reshape(X, (-1, self.n_of_features))
         output = self.objnet.call(X)
-        output = K.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
+        output = tf.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
 
         return output
 
@@ -122,7 +123,7 @@ class RecurrentRelationalModel(Layer):
 
     def build(self, input_shape):
         self.relnet.build((None, self.n_of_features))  # ,self.input_size
-        self.weights = self.relnet.weights
+        # self.weights = self.relnet.weights
 
     def compute_output_shape(self, input_shape):
         output_size = self.output_size
@@ -130,9 +131,9 @@ class RecurrentRelationalModel(Layer):
         return (None, input_size, int(output_size))
 
     def call(self, X):
-        x = K.reshape(X, (-1, self.timestep_diff, self.n_of_features))
+        x = tf.reshape(X, (-1, self.timestep_diff, self.n_of_features))
         output = self.relnet.call(x)
-        output = K.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
+        output = tf.reshape(output, ((-1,) + self.input_size + (self.output_size,)))
         return output
 
     def getRelnet(self):
@@ -179,11 +180,11 @@ class RecurrentRelationalModel_many(Layer):
     def build(self, input_shape):
         self.relnetpart1.build((None, self.n_of_features))
         self.relnetpart2.build((None, 100))
-        self.weights = []
-        for w in self.relnetpart1.weights:
-            self.weights.append(w)
-        for w in self.relnetpart2.weights:
-            self.weights.append(w)
+        # self.weights = []
+        # for w in self.relnetpart1.weights:
+        #     self.weights.append(w)
+        # for w in self.relnetpart2.weights:
+        #     self.weights.append(w)
 
     def compute_output_shape(self, input_shape):
         output_size = self.output_size
@@ -191,10 +192,10 @@ class RecurrentRelationalModel_many(Layer):
         return (None, input_size, int(output_size))
 
     def call(self, X):
-        x = K.reshape(X, (-1, self.timestep_diff, self.n_of_features))
+        x = tf.reshape(X, (-1, self.timestep_diff, self.n_of_features))
         output = self.relnetpart1.call(x)
         output = self.relnetpart2.call(output[:, self.lookstart:, :])
-        output = K.reshape(output, (-1, self.input_size, self.timestep_diff - self.lookstart, self.output_size))
+        output = tf.reshape(output, (-1, self.input_size, self.timestep_diff - self.lookstart, self.output_size))
         return output
 
     def getRelnet(self):
