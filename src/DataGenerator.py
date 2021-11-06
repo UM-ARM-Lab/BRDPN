@@ -34,7 +34,7 @@ class DataGenerator(tf.keras.utils.Sequence):
 
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(self.num_of_traj * (self.number_of_frames - 1) / self.batch_size)) / 2
+        return int(np.floor(self.num_of_traj * (self.number_of_frames - 1) / self.batch_size) / 2)
 
     def __getitem__(self, index):
         'Generate one batch of data'

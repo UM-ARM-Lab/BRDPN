@@ -1,15 +1,14 @@
 import copy
 
-import keras
 import matplotlib.pyplot as plt
-import numpy as np
+import tensorflow as tf
 from IPython.display import clear_output
 from sklearn.metrics import mean_squared_error
 
 from DatasetLoader import *
 
 
-class Change_Noise_Callback(keras.callbacks.Callback):
+class Change_Noise_Callback(tf.keras.callbacks.Callback):
     def __init__(self, generator, gauss_noise=0.20):
         self.gauss_noise = gauss_noise
         self.generator = generator
@@ -22,7 +21,7 @@ class Change_Noise_Callback(keras.callbacks.Callback):
         return
 
 
-class Test_My_Metrics_Callback(keras.callbacks.Callback):
+class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
     def __init__(self, PN, n_of_dataset, n_of_rel, scaler, **kwargs):
         self.valTrajs = dict()
         self.val_origin_pos = dict()
@@ -133,7 +132,7 @@ class Test_My_Metrics_Callback(keras.callbacks.Callback):
         return
 
 
-class PlotLosses(keras.callbacks.Callback):
+class PlotLosses(tf.keras.callbacks.Callback):
     def __init__(self, CSV_PATH, n_of_dataset, num_of_objects):
         self.CSV_PATH = CSV_PATH
         self.n_of_dataset = n_of_dataset
@@ -183,7 +182,7 @@ class PlotLosses(keras.callbacks.Callback):
             print('val' + str(self.num_of_objects[z]) + '_pos_loss')
             self.pos_losses[z].append(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
             plt.plot(self.x, np.log(self.pos_losses[z]), label='val' + str(self.num_of_objects[z]) + '_pos_loss')
-            print(tr(self.num_of_objects[z]) + ' objects poss loss:',
+            print(str(self.num_of_objects[z]) + ' objects poss loss:',
                   logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
             f.write(',' + str(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss')))
         plt.xlim([-0.1, self.i + 10])
