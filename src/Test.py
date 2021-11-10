@@ -78,28 +78,41 @@ def Test(dataset, Ins, frame_len, relation_threshold):
     return xy_origin_pos, xy_calculated_pos, r, edges
 
 
-def my_make_video_Fixed(true, pred, r, edge, outdir):
+def make_fixed_video(pos, r, edge, outdir):
     """
     r is radius [n trajs, n_objects]
     edge is for drawing the ground-truth joints [n trajs, n_rel, 1]
     """
+    n_trajs, n_frames, n_objects, _ = pos.shape
+    for ax, traj_idx, t in make_video(n_trajs, n_frames, outdir, 'pred'):
+        add_edges(pos[traj_idx, t], ax, edge[traj_idx])
+        add_to_frame(pos[traj_idx, t], ax, r[traj_idx], fill=True)
 
-    FFMpegWriter = manimation.writers['ffmpeg']
-    metadata = dict(title='Movie Test', artist='Matplotlib',
-                    comment='Movie support!')
-    writer = FFMpegWriter(fps=15, metadata=metadata)
+
+def make_fixed_video_overlayed(true, pred, r, edge, outdir, ):
+    """
+    r is radius [n trajs, n_objects]
+    edge is for drawing the ground-truth joints [n trajs, n_rel, 1]
+    """
+    n_trajs, n_frames, n_objects, _ = true.shape
+    for ax, traj_idx, t in make_video(n_trajs, n_frames, outdir, 'overlay'):
+        add_edges(true[traj_idx, t], ax, edge[traj_idx])
+        add_to_frame(true[traj_idx, t], ax, r[traj_idx], fill=True)
+        add_to_frame(pred[traj_idx, t], ax, r[traj_idx], fill=False)
+
+
+def make_video(n_trajs, n_frames, outdir, name):
+    metadata = {'title': 'Movie Test', 'artist': 'Matplotlib'}
+    writer = manimation.writers['ffmpeg'](fps=15, metadata=metadata)
 
     fig = plt.figure(figsize=(8, 8))
     ax = plt.gca()
     clear_axes(ax)
-    n_trajs, n_frames, n_objects, _ = true.shape
     for traj_idx in range(n_trajs):
-        filename = outdir / f'test_traj_{traj_idx}.mp4'
+        filename = outdir / f'{name}_{traj_idx}.mp4'
         with writer.saving(fig, filename, n_frames):
             for t in range(n_frames):
-                add_edges(true[traj_idx, t], ax, edge[traj_idx])
-                add_to_frame(true[traj_idx, t], ax, r[traj_idx], fill=True)
-                add_to_frame(pred[traj_idx, t], ax, r[traj_idx], fill=False)
+                yield ax, traj_idx, t
 
                 writer.grab_frame()
 
@@ -116,7 +129,8 @@ def clear_axes(ax):
 
 def add_to_frame(states, ax, r, fill):
     for j in range(states.shape[0]):
-        circle = plt.Circle((states[j, 1], states[j, 0]), r[j] / 2, color=color[j % 9], fill=fill, alpha=0.8, linewidth=3)
+        circle = plt.Circle((states[j, 1], states[j, 0]), r[j] / 2, color=color[j % 9], fill=fill, alpha=0.8,
+                            linewidth=3)
         ax.add_artist(circle)
 
 

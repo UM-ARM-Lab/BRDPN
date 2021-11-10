@@ -133,8 +133,8 @@ class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
 
 
 class PlotLosses(tf.keras.callbacks.Callback):
-    def __init__(self, CSV_PATH, n_of_dataset, num_of_objects):
-        self.CSV_PATH = CSV_PATH
+    def __init__(self, csv_path, n_of_dataset, num_of_objects):
+        self.CSV_PATH = csv_path
         self.n_of_dataset = n_of_dataset
         self.num_of_objects = num_of_objects
 
