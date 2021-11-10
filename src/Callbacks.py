@@ -10,6 +10,7 @@ from DatasetLoader import *
 
 class Change_Noise_Callback(tf.keras.callbacks.Callback):
     def __init__(self, generator, gauss_noise=0.20):
+        super().__init__()
         self.gauss_noise = gauss_noise
         self.generator = generator
 
@@ -23,6 +24,7 @@ class Change_Noise_Callback(tf.keras.callbacks.Callback):
 
 class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
     def __init__(self, PN, n_of_dataset, n_of_rel, scaler, **kwargs):
+        super().__init__()
         self.valTrajs = dict()
         self.val_origin_pos = dict()
         self.val_origin_vel = dict()
@@ -57,7 +59,9 @@ class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
             self.bestEpochOnVelError[i] = -1
             self.lowestVelError[i] = 10000
 
-    def on_epoch_end(self, epoch, logs={}):
+    def on_epoch_end(self, epoch, logs=None):
+        if logs is None:
+            logs = {}
         for k in range(self.n_of_dataset):
             num_of_traj = self.num_of_trajs[k]
             num_of_object = self.num_of_objects[k]
@@ -134,22 +138,34 @@ class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
 
 class PlotLosses(tf.keras.callbacks.Callback):
     def __init__(self, csv_path, n_of_dataset, num_of_objects):
+        super().__init__()
         self.CSV_PATH = csv_path
         self.n_of_dataset = n_of_dataset
         self.num_of_objects = num_of_objects
 
-    def on_train_begin(self, logs={}):
         self.i = 0
-        self.x = list()
-        self.losses = list()
-        self.val_losses = list()
+        self.x = []
+        self.losses = []
+        self.val_losses = []
 
-        self.pos_losses = list()
-        self.vel_losses = list()
+        self.pos_losses = []
+        self.vel_losses = []
+
+    def on_train_begin(self, logs=None):
+        if logs is None:
+            logs = {}
+
+        self.i = 0
+        self.x = []
+        self.losses = []
+        self.val_losses = []
+
+        self.pos_losses = []
+        self.vel_losses = []
 
         for i in range(self.n_of_dataset):
-            self.pos_losses.append(list())
-            self.vel_losses.append(list())
+            self.pos_losses.append([])
+            self.vel_losses.append([])
         with open(self.CSV_PATH, 'w') as f:
             f.write('loss,val_loss')
             for i in range(self.n_of_dataset):
@@ -171,23 +187,23 @@ class PlotLosses(tf.keras.callbacks.Callback):
         self.i += 1
         clear_output(wait=True)
         self.fig = plt.figure(figsize=(20, 6))
-        plt.subplot(1, 3, 1)
-        plt.plot(self.x, np.log(self.losses), label="loss")
-        plt.plot(self.x, np.log(self.val_losses), label="val_loss")
+        # plt.subplot(1, 3, 1)
+        # plt.plot(self.x, np.log(self.losses), label="loss")
+        # plt.plot(self.x, np.log(self.val_losses), label="val_loss")
 
-        plt.xlim([-0.1, self.i + 10])
-        plt.legend(loc=1)
-        plt.subplot(1, 3, 2)
-        for z in range(self.n_of_dataset):
-            print('val' + str(self.num_of_objects[z]) + '_pos_loss')
-            self.pos_losses[z].append(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
-            plt.plot(self.x, np.log(self.pos_losses[z]), label='val' + str(self.num_of_objects[z]) + '_pos_loss')
-            print(str(self.num_of_objects[z]) + ' objects poss loss:',
-                  logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
-            f.write(',' + str(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss')))
-        plt.xlim([-0.1, self.i + 10])
-        plt.legend(loc=1)
-        plt.subplot(1, 3, 3)
+        # plt.xlim([-0.1, self.i + 10])
+        # plt.legend(loc=1)
+        # plt.subplot(1, 3, 2)
+        # for z in range(self.n_of_dataset):
+        #     print('val' + str(self.num_of_objects[z]) + '_pos_loss')
+        #     self.pos_losses[z].append(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
+        #     plt.plot(self.x, np.log(self.pos_losses[z]), label='val' + str(self.num_of_objects[z]) + '_pos_loss')
+        #     print(str(self.num_of_objects[z]) + ' objects poss loss:',
+        #           logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
+        #     f.write(',' + str(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss')))
+        # plt.xlim([-0.1, self.i + 10])
+        # plt.legend(loc=1)
+        # plt.subplot(1, 3, 3)
         for z in range(self.n_of_dataset):
             self.vel_losses[z].append(logs.get('val' + str(self.num_of_objects[z]) + '_vel_loss'))
             plt.plot(self.x, np.log(self.vel_losses[z]), label='val' + str(self.num_of_objects[z]) + '_vel_loss')
@@ -196,6 +212,6 @@ class PlotLosses(tf.keras.callbacks.Callback):
             f.write(',' + str(logs.get('val' + str(self.num_of_objects[z]) + '_vel_loss')))
         f.write('\n')
         f.close()
-        plt.xlim([-0.1, self.i + 10])
-        plt.legend(loc=1)
-        plt.show()
+        # plt.xlim([-0.1, self.i + 10])
+        # plt.legend(loc=1)
+        # plt.show()
