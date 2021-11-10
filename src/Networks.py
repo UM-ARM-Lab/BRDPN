@@ -1,6 +1,5 @@
-from tensorflow.keras.layers import Subtract, Add, Lambda, dot, Concatenate, Permute, Activation, Dropout
-import tensorflow as tf
 from tensorflow.keras import optimizers
+from tensorflow.keras.layers import Subtract, Add, Lambda, dot, Concatenate, Permute, Activation, Dropout
 
 from Blocks import *
 
@@ -10,8 +9,8 @@ class PropagationNetwork:
         self.Nets = {}
         self.set_weights = False
 
-    def setModel(self, n_objects, PATH):
-        self.Nets[n_objects].load_weights(PATH)
+    def setModel(self, n_objects, path: str):
+        self.Nets[n_objects].load_weights(path)
 
     def getModel(self, n_objects, object_dim=6, relation_dim=1):
         if n_objects in self.Nets.keys():

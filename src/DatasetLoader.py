@@ -31,8 +31,8 @@ class MyScaler:
 
 
 class MyDataset:
-    def __init__(self, **kwargs):
-        self.PATH = kwargs['PATH']
+    def __init__(self, path: str, **kwargs):
+        self.path = path
         self.n_of_obj = kwargs['n_of_obj']
         self.n_of_rel = self.n_of_obj * (self.n_of_obj + 1)
 
@@ -57,13 +57,13 @@ class MyDataset:
         startIndex = 3
 
         def getScene(scene_ind):
-            temp_txt = np.loadtxt(self.PATH + str(scene_ind) + '/info.txt', skiprows=1)
+            temp_txt = np.loadtxt(self.path + str(scene_ind) + '/info.txt', skiprows=1)
             self.data[scene_ind * self.n_of_exp:(scene_ind + 1) * self.n_of_exp, :, 1:, 0] = temp_txt[0:-1:3]
             self.data[scene_ind * self.n_of_exp:(scene_ind + 1) * self.n_of_exp, :, 0, 0] = 0.1
             self.data[scene_ind * self.n_of_exp:(scene_ind + 1) * self.n_of_exp, :, 0, 1] = 1
 
-            if os.path.isfile(self.PATH + str(scene_ind) + '/info2.txt'):
-                temp_txt2 = np.loadtxt(self.PATH + str(scene_ind) + '/info2.txt', skiprows=1)
+            if os.path.isfile(self.path + str(scene_ind) + '/info2.txt'):
+                temp_txt2 = np.loadtxt(self.path + str(scene_ind) + '/info2.txt', skiprows=1)
                 for obj_ind in range(self.n_of_obj - 3):
                     if temp_txt2[obj_ind, 0] > 1:
                         obj1 = obj_ind + startIndex + 1
@@ -75,10 +75,10 @@ class MyDataset:
             for exp_ind in range(self.n_of_exp):
                 for obj_ind in range(self.n_of_obj):
                     temp_txt = np.loadtxt(
-                        self.PATH + str(scene_ind) + '/' + str(exp_ind + 1) + '/Cylinder' + str(obj_ind + 1) + '.txt')
+                        self.path + str(scene_ind) + '/' + str(exp_ind + 1) + '/Cylinder' + str(obj_ind + 1) + '.txt')
                     self.data[scene_ind * self.n_of_exp + exp_ind, :, obj_ind + 1, 2:4] = temp_txt[:, :2]
 
-                temp_txt = np.loadtxt(self.PATH + str(scene_ind) + '/' + str(exp_ind + 1) + '/hand.txt')
+                temp_txt = np.loadtxt(self.path + str(scene_ind) + '/' + str(exp_ind + 1) + '/hand.txt')
                 self.data[scene_ind * self.n_of_exp + exp_ind, :, 0, 2:4] = temp_txt[:, :2]
 
         for scene_idx in trange(self.n_of_scene):
