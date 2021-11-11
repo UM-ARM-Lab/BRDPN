@@ -63,8 +63,8 @@ def Test(dataset,Ins,frame_len,relation_threshold):
     
     xy_calculated_pos=pred_xy[:,:,:,2:4]
     xy_calculated_vel=pred_xy[:,:,:,4:6]
-    print 'mse-pos:',np.log(mean_squared_error(xy_calculated_pos[:,:,1:,:].reshape(-1,2),xy_origin_pos[:,:,1:,:].reshape(-1,2)))
-    print 'mse-vel:',np.log(mean_squared_error(xy_calculated_vel[:,:,1:,:].reshape(-1,2),xy_origin_vel[:,:,1:,:].reshape(-1,2)))
+    print('mse-pos:',np.log(mean_squared_error(xy_calculated_pos[:,:,1:,:].reshape(-1,2),xy_origin_pos[:,:,1:,:].reshape(-1,2))))
+    print('mse-vel:',np.log(mean_squared_error(xy_calculated_vel[:,:,1:,:].reshape(-1,2),xy_origin_vel[:,:,1:,:].reshape(-1,2))))
     return xy_origin_pos,xy_calculated_pos,r,edges
 
 def make_video_Fixed(xy,r,edge,filename):

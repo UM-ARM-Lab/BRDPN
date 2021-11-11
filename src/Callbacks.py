@@ -106,7 +106,7 @@ class Test_My_Metrics_Callback(keras.callbacks.Callback):
             val_pred=self.scaler.inv_transform(dataToModel)
             pos_error=mean_squared_error(val_pred[:,:,1:,2:4].reshape(-1,2),self.val_origin_pos[k][:,:,1:,:].reshape(-1,2))
             vel_error=mean_squared_error(val_pred[:,:,1:,4:6].reshape(-1,2),self.val_origin_vel[k][:,:,1:,:].reshape(-1,2))
-            print 'val'+str(self.num_of_objects[k])+'_pos_loss' 
+            print('val'+str(self.num_of_objects[k])+'_pos_loss' )
             logs['val'+str(self.num_of_objects[k])+'_pos_loss'] = pos_error
             logs['val'+str(self.num_of_objects[k])+'_vel_loss'] = vel_error
             if pos_error<self.lowestPosError[k]:
@@ -162,10 +162,10 @@ class PlotLosses(keras.callbacks.Callback):
         plt.legend(loc=1)
         plt.subplot(1,3,2)
         for z in range(self.n_of_dataset):
-            print 'val'+str(self.num_of_objects[z])+'_pos_loss'
+            print('val'+str(self.num_of_objects[z])+'_pos_loss')
             self.pos_losses[z].append(logs.get('val'+str(self.num_of_objects[z])+'_pos_loss'))
             plt.plot(self.x, np.log(self.pos_losses[z]), label='val'+str(self.num_of_objects[z])+'_pos_loss')
-            print str(self.num_of_objects[z])+' objects poss loss:',logs.get('val'+str(self.num_of_objects[z])+'_pos_loss')
+            print(str(self.num_of_objects[z])+' objects poss loss:',logs.get('val'+str(self.num_of_objects[z])+'_pos_loss'))
             f.write(',' + str(logs.get('val'+str(self.num_of_objects[z])+'_pos_loss')))
         plt.xlim([-0.1, self.i+10])  
         plt.legend(loc=1)
@@ -173,7 +173,7 @@ class PlotLosses(keras.callbacks.Callback):
         for z in range(self.n_of_dataset):
             self.vel_losses[z].append(logs.get('val'+str(self.num_of_objects[z])+'_vel_loss'))
             plt.plot(self.x, np.log(self.vel_losses[z]), label='val'+str(self.num_of_objects[z])+'_vel_loss')
-            print str(self.num_of_objects[z])+' objects vel loss:',logs.get('val'+str(self.num_of_objects[z])+'_vel_loss')
+            print(str(self.num_of_objects[z])+' objects vel loss:',logs.get('val'+str(self.num_of_objects[z])+'_vel_loss'))
             f.write(',' + str(logs.get('val'+str(self.num_of_objects[z])+'_vel_loss')))
         f.write('\n')
         f.close()
