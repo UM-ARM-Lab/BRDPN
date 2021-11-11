@@ -1,18 +1,36 @@
 import pickle
+import re
+import sys
+import time
 
 from Callbacks import *
 from DataGenerator import *
 from Networks import *
 
 with open('../Models/Dataset_Simple_scaler.pickle', 'rb') as handle:
-    dataset_scaler = pickle.load(handle)
+    if sys.version_info.major == 3:
+        dataset_scaler = pickle.load(handle, encoding='latin1')
+    else:
+        dataset_scaler = pickle.load(handle)
+
+print(dataset_scaler)
 
 TEST_PATH = '../Test_Results/Prop-Network-Fixed'
-if os.path.exists(TEST_PATH):
+i = -1
+for f in os.listdir(TEST_PATH):
+    parts = os.path.split(f)
+    m = re.match(r'(\d+)-.*', parts[-1])
+    if m:
+        i = max(int(m.group(1)), i)
+i += 1
+unique_dir = "{0}-{1}".format(i, int(time.time()))
+outdir = os.path.join(TEST_PATH, unique_dir)
+print(outdir)
+if os.path.exists(outdir):
     print(Exception('This directory already exists'))
 else:
-    os.mkdir(TEST_PATH)
-    os.mkdir(TEST_PATH + '/saved_models')
+    os.mkdir(outdir)
+    os.mkdir(outdir + '/saved_models')
 
 my_dataset9 = MyDataset(PATH='../Data/DATASET_FIXED_ONLY/9Objects/', n_of_scene=1100, n_of_exp=4, n_of_obj=9, f_size=8,
                         n_of_rel_type=1, fr_size=240, scaler=dataset_scaler)
@@ -43,7 +61,7 @@ Pns.setModel(10, '../Models/PN_fixed.hdf5')
 _ = Pns.getModel(10, 6, 1)
 
 # ## Training
-TrainDg9_PN = DataGenerator(10, 1, 240, 3600, my_dataset9.data_tr, my_dataset9.r_i_tr,
+TrainDg9_PN = DataGenerator(10, 1, 240, 1000, my_dataset9.data_tr, my_dataset9.r_i_tr,
                             my_dataset9.scaler.relation_threshold, True, 64)
 valDg9_PN = DataGenerator(10, 1, 240, 600, my_dataset9.data_val, my_dataset9.r_i_val,
                           my_dataset9.scaler.relation_threshold, False, 128)
@@ -56,17 +74,18 @@ _ = Pns.getModel(10, 6, 1)
 gauss_callback = Change_Noise_Callback(TrainDg9_PN)
 test_metrics = Test_My_Metrics_Callback(Pns, 3, 1, my_dataset9.scaler, dataset_0=my_dataset9, dataset_1=my_dataset6,
                                         dataset_2=my_dataset12)
-plt_callback = PlotLosses(TEST_PATH + '/Networks_logs.csv', 3, [10, 7, 13])
+
+plt_callback = PlotLosses(outdir + '/Networks_logs.csv', 3, [10, 7, 13])
 reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.8, verbose=1, patience=20, mode='auto',
                                               cooldown=20)
-save_model = keras.callbacks.ModelCheckpoint(TEST_PATH + '/saved_models/weights.{epoch:02d}.hdf5', monitor='val_loss',
+save_model = keras.callbacks.ModelCheckpoint(outdir + '/saved_models/weights.{epoch:02d}.hdf5', monitor='val_loss',
                                              verbose=0, save_best_only=False, save_weights_only=False, mode='auto',
                                              period=1)
 
 Pn1.fit_generator(generator=TrainDg9_PN,
                   validation_data=valDg9_PN,
-                  epochs=50,
+                  epochs=3,
                   use_multiprocessing=True,
-                  workers=32,
+                  workers=16,
                   callbacks=[reduce_lr, test_metrics, plt_callback, save_model],
                   verbose=1)
