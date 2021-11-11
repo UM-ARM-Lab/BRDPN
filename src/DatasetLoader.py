@@ -84,7 +84,9 @@ class MyDataset:
                 temp_txt = np.loadtxt(self.PATH + str(scene_ind) + '/' + str(exp_ind + 1) + '/hand.txt')
                 self.data[scene_ind * self.n_of_exp + exp_ind, :, 0, 2:4] = temp_txt[:, :2]
 
-        map(getScene, tqdm(range(self.n_of_scene)))
+        for scene_idx in tqdm(range(self.n_of_scene)):
+            getScene(scene_idx)
+
         self.data[:, :self.fr_size - 1, :, 4:] = self.data[:, 1:self.fr_size, :, 2:4] - self.data[:, :self.fr_size - 1,
                                                                                         :, 2:4]
 
