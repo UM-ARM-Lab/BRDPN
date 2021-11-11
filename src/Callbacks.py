@@ -1,14 +1,13 @@
 import copy
 
 import keras
-import tensorflow as tf
-from IPython.display import clear_output
+import numpy as np
 
 from DatasetLoader import *
 
 
 def mse(a, b):
-    return tf.reduce_mean(tf.square(a - b))
+    return np.mean(np.square(a - b))
 
 
 class Change_Noise_Callback(keras.callbacks.Callback):
@@ -170,7 +169,6 @@ class PlotLosses(keras.callbacks.Callback):
         f.write(str(logs.get('loss')) + ',' + str(logs.get('val_loss')))
 
         self.i += 1
-        clear_output(wait=True)
         for z in range(self.n_of_dataset):
             print('val' + str(self.num_of_objects[z]) + '_pos_loss')
             self.pos_losses[z].append(logs.get('val' + str(self.num_of_objects[z]) + '_pos_loss'))
