@@ -8,20 +8,6 @@ from sklearn.metrics import mean_squared_error
 from DatasetLoader import *
 
 
-class Change_Noise_Callback(tf.keras.callbacks.Callback):
-    def __init__(self, generator, gauss_noise=0.20):
-        super().__init__()
-        self.gauss_noise = gauss_noise
-        self.generator = generator
-
-    def on_epoch_begin(self, epoch, logs={}):
-        if epoch == 250:
-            self.generator.changeGauss(0)
-        elif epoch > 50 and epoch < 250:
-            self.generator.changeGauss(self.gauss_noise - (epoch - 50) * self.gauss_noise / 200.0)
-        return
-
-
 class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
     def __init__(self, PN, n_of_dataset, n_of_rel, scaler, **kwargs):
         super().__init__()
@@ -139,7 +125,7 @@ class Test_My_Metrics_Callback(tf.keras.callbacks.Callback):
 class PlotLosses(tf.keras.callbacks.Callback):
     def __init__(self, csv_path, n_of_dataset, num_of_objects):
         super().__init__()
-        self.CSV_PATH = csv_path
+        self.csv_path = csv_path
         self.n_of_dataset = n_of_dataset
         self.num_of_objects = num_of_objects
 
@@ -151,9 +137,9 @@ class PlotLosses(tf.keras.callbacks.Callback):
         self.pos_losses = []
         self.vel_losses = []
 
-    def on_train_begin(self, logs=None):
-        if logs is None:
-            logs = {}
+        self.logs = []
+
+    def on_train_begin(self, logs):
 
         self.i = 0
         self.x = []
@@ -166,7 +152,7 @@ class PlotLosses(tf.keras.callbacks.Callback):
         for i in range(self.n_of_dataset):
             self.pos_losses.append([])
             self.vel_losses.append([])
-        with open(self.CSV_PATH, 'w') as f:
+        with open(self.csv_path, 'w') as f:
             f.write('loss,val_loss')
             for i in range(self.n_of_dataset):
                 f.write(',val' + str(self.num_of_objects[i]) + '_pos_loss')
@@ -181,7 +167,7 @@ class PlotLosses(tf.keras.callbacks.Callback):
         self.x.append(self.i)
         self.losses.append(logs.get('loss'))
         self.val_losses.append(logs.get('val_loss'))
-        f = open(self.CSV_PATH, 'a')
+        f = open(self.csv_path, 'a')
         f.write(str(logs.get('loss')) + ',' + str(logs.get('val_loss')))
 
         self.i += 1
