@@ -153,30 +153,30 @@ class PlotLosses(keras.callbacks.Callback):
         
         self.i += 1
         clear_output(wait=True)
-        self.fig = plt.figure(figsize=(20,6))
-        plt.subplot(1,3,1)
-        plt.plot(self.x, np.log(self.losses), label="loss")
-        plt.plot(self.x, np.log(self.val_losses), label="val_loss")
-
-        plt.xlim([-0.1, self.i+10])   
-        plt.legend(loc=1)
-        plt.subplot(1,3,2)
+        # self.fig = plt.figure(figsize=(20,6))
+        # plt.subplot(1,3,1)
+        # plt.plot(self.x, np.log(self.losses), label="loss")
+        # plt.plot(self.x, np.log(self.val_losses), label="val_loss")
+        #
+        # plt.xlim([-0.1, self.i+10])
+        # plt.legend(loc=1)
+        # plt.subplot(1,3,2)
         for z in range(self.n_of_dataset):
             print('val'+str(self.num_of_objects[z])+'_pos_loss')
             self.pos_losses[z].append(logs.get('val'+str(self.num_of_objects[z])+'_pos_loss'))
-            plt.plot(self.x, np.log(self.pos_losses[z]), label='val'+str(self.num_of_objects[z])+'_pos_loss')
+            # plt.plot(self.x, np.log(self.pos_losses[z]), label='val'+str(self.num_of_objects[z])+'_pos_loss')
             print(str(self.num_of_objects[z])+' objects poss loss:',logs.get('val'+str(self.num_of_objects[z])+'_pos_loss'))
             f.write(',' + str(logs.get('val'+str(self.num_of_objects[z])+'_pos_loss')))
-        plt.xlim([-0.1, self.i+10])  
-        plt.legend(loc=1)
-        plt.subplot(1,3,3)
+        # plt.xlim([-0.1, self.i+10])
+        # plt.legend(loc=1)
+        # plt.subplot(1,3,3)
         for z in range(self.n_of_dataset):
             self.vel_losses[z].append(logs.get('val'+str(self.num_of_objects[z])+'_vel_loss'))
-            plt.plot(self.x, np.log(self.vel_losses[z]), label='val'+str(self.num_of_objects[z])+'_vel_loss')
+            # plt.plot(self.x, np.log(self.vel_losses[z]), label='val'+str(self.num_of_objects[z])+'_vel_loss')
             print(str(self.num_of_objects[z])+' objects vel loss:',logs.get('val'+str(self.num_of_objects[z])+'_vel_loss'))
             f.write(',' + str(logs.get('val'+str(self.num_of_objects[z])+'_vel_loss')))
         f.write('\n')
         f.close()
-        plt.xlim([-0.1, self.i+10])    
-        plt.legend(loc=1)
-        plt.show();
+        # plt.xlim([-0.1, self.i+10])
+        # plt.legend(loc=1)
+        # plt.show();

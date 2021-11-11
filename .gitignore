@@ -1,4 +1,5 @@
 Data/
+results
 Test_Results/
 */.ipynb_checkpoints/
 *.pyc
