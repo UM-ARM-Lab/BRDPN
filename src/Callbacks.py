@@ -1,15 +1,14 @@
 import copy
 
 import keras
+import tensorflow as tf
 from IPython.display import clear_output
 
 from DatasetLoader import *
 
-import tensorflow as tf
 
-
-def mean_squared_error(a, b):
-    return tf.reduce_mean(tf.square(a - b), axis=0)
+def mse(a, b):
+    return tf.reduce_mean(tf.square(a - b))
 
 
 class Change_Noise_Callback(keras.callbacks.Callback):
@@ -120,10 +119,8 @@ class Test_My_Metrics_Callback(keras.callbacks.Callback):
                             val_sender_relations[inzz, m, cnt] = 1.0
                             cnt += 1
             val_pred = self.scaler.inv_transform(dataToModel)
-            pos_error = mean_squared_error(val_pred[:, :, 1:, 2:4].reshape(-1, 2),
-                                           self.val_origin_pos[k][:, :, 1:, :].reshape(-1, 2))
-            vel_error = mean_squared_error(val_pred[:, :, 1:, 4:6].reshape(-1, 2),
-                                           self.val_origin_vel[k][:, :, 1:, :].reshape(-1, 2))
+            pos_error = mse(val_pred[:, :, 1:, 2:4].reshape(-1, 2), self.val_origin_pos[k][:, :, 1:, :].reshape(-1, 2))
+            vel_error = mse(val_pred[:, :, 1:, 4:6].reshape(-1, 2), self.val_origin_vel[k][:, :, 1:, :].reshape(-1, 2))
             print('val' + str(self.num_of_objects[k]) + '_pos_loss')
             logs['val' + str(self.num_of_objects[k]) + '_pos_loss'] = pos_error
             logs['val' + str(self.num_of_objects[k]) + '_vel_loss'] = vel_error
