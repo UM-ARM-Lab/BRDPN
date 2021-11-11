@@ -2,9 +2,14 @@ import copy
 
 import keras
 from IPython.display import clear_output
-from sklearn.metrics import mean_squared_error
 
 from DatasetLoader import *
+
+import tensorflow as tf
+
+
+def mean_squared_error(a, b):
+    return tf.reduce_mean(tf.square(a - b), axis=0)
 
 
 class Change_Noise_Callback(keras.callbacks.Callback):

@@ -4,6 +4,7 @@ import sys
 import time
 
 import keras.callbacks
+from tensorflow import ConfigProto, GPUOptions
 
 from Callbacks import *
 from DataGenerator import *
@@ -16,6 +17,12 @@ class DebuggingCheckpoint(keras.callbacks.Callback):
 
 
 def main():
+    gpu_options = GPUOptions()
+    gpu_options.allow_growth = True
+    gpu_options.per_process_gpu_memory_fraction = 0.1
+    config = ConfigProto(gpu_options=gpu_options)
+    tf.enable_eager_execution(config)
+
     with open('../Models/Dataset_Simple_scaler.pickle', 'rb') as handle:
         if sys.version_info.major == 3:
             dataset_scaler = pickle.load(handle, encoding='latin1')
