@@ -51,9 +51,7 @@ testDg_PN = DataGenerator(10, 1, 240, 200, my_dataset9.data_test, my_dataset9.r_
                           my_dataset9.scaler.relation_threshold, False, 100, False)
 
 Pns = PropagationNetwork()
-Pn1 = Pns.getModel(10, 6, 1)
-
-print(len(TrainDg9_PN))
+_ = Pns.getModel(10, 6, 1)
 
 gauss_callback = Change_Noise_Callback(TrainDg9_PN)
 test_metrics = Test_My_Metrics_Callback(Pns, 3, 1, my_dataset9.scaler, dataset_0=my_dataset9, dataset_1=my_dataset6,
